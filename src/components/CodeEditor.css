@@ -1,0 +1,71 @@
+.codeEditor {
+  height: 100vh;
+}
+
+.codeEditor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid whitesmoke;
+  padding: 20px;
+}
+
+.codeEditor__headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.toggle__icon {
+  height: 25px;
+  padding: 5px;
+  object-fit: contain;
+  background-color: rgb(93, 93, 93);
+  border-radius: 30px;
+}
+
+.codeEditor__body {
+  display: flex;
+  justify-content: space-between;
+}
+
+.codeEditor__bodyLeft {
+  flex: 0.2;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  height: 80vh;
+  padding: 0 5px;
+  background-color: rgb(255, 255, 255);
+  border-right: 2px solid whitesmoke;
+  overflow: scroll;
+}
+
+.codeEditor__bodyLeft--dark {
+  background-color: rgb(30, 30, 30);
+  color: rgb(220, 220, 220);
+}
+
+.codeEditor__bodyLeft::-webkit-scrollbar {
+  display: none;
+}
+
+.codeEditor__bodyLeft > h3 {
+  font-size: 15px;
+  font-weight: 800;
+  border-bottom: 1px solid whitesmoke;
+  margin: 5px 0;
+}
+
+.codeEditor__file {
+  cursor: pointer;
+  padding: 0 5px;
+  border-bottom: 0.3px solid whitesmoke;
+}
+
+.codeEditor__file:hover {
+  opacity: 0.7;
+}
+
+.codeEditor__bodyRight {
+  flex: 0.8;
+}

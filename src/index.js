@@ -4,9 +4,21 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import {HashRouter as Router} from "react-router-dom";
+
+import {StateProvider} from './components/StateProvider';
+import reducer, {initialState} from './components/reducer';
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <StateProvider
+        initialState={initialState}
+        reducer={reducer}
+      >
+        <App />
+      </StateProvider>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );
