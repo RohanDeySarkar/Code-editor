@@ -52,18 +52,25 @@
 .codeEditor__bodyLeft > h3 {
   font-size: 15px;
   font-weight: 800;
+  letter-spacing: 1px;
   border-bottom: 1px solid whitesmoke;
   margin: 5px 0;
 }
 
 .codeEditor__file {
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  padding: 0 5px;
-  border-bottom: 0.3px solid whitesmoke;
+  padding: 5px 5px;
+  /* border-bottom: 0.3px solid whitesmoke; */
 }
 
 .codeEditor__file:hover {
   opacity: 0.7;
+}
+
+.codeEditor__file > p {
+  margin-left: 5px;
 }
 
 .codeEditor__bodyRight {

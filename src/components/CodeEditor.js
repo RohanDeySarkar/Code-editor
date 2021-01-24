@@ -4,52 +4,60 @@ import './CodeEditor.css';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import Switch from '@material-ui/core/Switch';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 
 import MonacoEditor from 'react-monaco-editor';
 import Editor from "@monaco-editor/react";
 
 import {v4 as uuid} from 'uuid';
 
-import {storage, db} from '../firebase';
+import {storage, db, firebaseApp} from '../firebase';
 import firebase from 'firebase';
 
 function CodeEditor() {
-    // const [selectedFile, setSelectedFile] = useState(null);
+    const [fileUrl, setFileUrl] = useState(null);
     const [checked, setChecked] = useState(false);
     const [files, setFiles] = useState(["file1.txt", "file1.txt", "file1.txt", "file1.txt"]);
 
     useEffect(() => {
-
-    }, []);
+        // snapshot db update files
+    }, [fileUrl]);
 
     const handleEditorChange = (value, event)  => {
         console.log("Your CODE-->", value);
     };
 
     const onChange = (e) => {
-        e.preventDefault()
-        const reader = new FileReader()
-        reader.onload = async (e) => { 
-            const text = (e.target.result)
-            console.log(text)
-        };
+        const file = e.target.files[0];
+        const storageRef = firebaseApp.storage().ref()
+        const fileRef = storageRef.child(file.name)
 
-        console.log(reader)
+        fileRef
+        .put(file)
+        .then(snapshot => {
+            return snapshot.ref.getDownloadURL();  
+        })
+        .then(downloadURL => {
+            setFileUrl(downloadURL)
+         })
+         .catch(err => {
+            console.log(err);
+         });
+    };
 
+    const addFile = () => {
+        console.log(fileUrl);
+        
         // db
         // .collection("files")
         // .add(
         //     {
-        //         data: reader.readAsText(e.target.files[0]),
-        //         timestamp: firebase.firestore.FieldValue.serverTimestamp(), 
+            
         //     }
         // )
     };
 
-    const uploadFile = () => {
-    };
-
-    // console.log(selectedFile);
+    
 
     return (
         <div className="codeEditor">
@@ -65,7 +73,7 @@ function CodeEditor() {
                         onChange={onChange}
                     />
 
-                    <Button onClick={uploadFile}>
+                    <Button onClick={addFile}>
                         Open in workspace
                     </Button>
 
@@ -95,6 +103,7 @@ function CodeEditor() {
                     <div>
                         {files.map((file => (
                             <div className="codeEditor__file">
+                                <InsertDriveFileIcon fontSize="small" />
                                 <p>{file}</p>
                             </div>
                         )))}
