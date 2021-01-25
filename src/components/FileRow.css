@@ -24,3 +24,7 @@
 .fileRow__file > p {
   margin-left: 8px;
 }
+
+.fileRow > .MuiSvgIcon-root {
+  color: #e53935 !important;
+}

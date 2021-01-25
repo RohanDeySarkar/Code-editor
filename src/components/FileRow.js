@@ -4,9 +4,11 @@ import './FileRow.css';
 import DescriptionIcon from '@material-ui/icons/Description';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
-import {db} from '../firebase';
+import {db, firebaseApp} from '../firebase';
 
 import {useStateValue} from './StateProvider';
+
+import Tooltip from '@material-ui/core/Tooltip';
 
 function FileRow({id, fileName, fileUrl}) {
 
@@ -14,7 +16,7 @@ function FileRow({id, fileName, fileUrl}) {
 
     const selectFile = () => {
         console.log(fileUrl);
-
+        
         // fetch(fileUrl)
         // .then((res) => {
         //     res.text()
@@ -32,11 +34,19 @@ function FileRow({id, fileName, fileUrl}) {
     };
 
     const handleDelete = () => {
+        // Delete from database
         db
         .collection("users")
         .doc(user.email)
         .collection("files")
         .doc(id)
+        .delete()
+
+        // Delete from storage
+        firebaseApp
+        .storage()
+        .ref()
+        .child(fileName)
         .delete()
     };
 
@@ -49,8 +59,10 @@ function FileRow({id, fileName, fileUrl}) {
                 <DescriptionIcon fontSize="small" />
                 <p>{fileName}</p>
             </div>
-
-            <HighlightOffIcon onClick={handleDelete} />
+            
+            <Tooltip title="Delete" arrow>
+                <HighlightOffIcon onClick={handleDelete} />
+            </Tooltip>
         </div>
     )
 }
