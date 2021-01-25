@@ -1,5 +1,6 @@
 export const initialState = {
-    user: null
+    user: null,
+    selectedId: null,
 };
 
 const reducer = (state, action) => {
@@ -16,6 +17,12 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 user: null
+            }
+
+        case "SELECTED_FILE":
+            return {
+                ...state,
+                selectedId: action.payload
             }
 
         default:
