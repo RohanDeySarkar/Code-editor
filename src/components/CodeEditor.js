@@ -4,70 +4,118 @@ import './CodeEditor.css';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import Switch from '@material-ui/core/Switch';
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-import MonacoEditor from 'react-monaco-editor';
 import Editor from "@monaco-editor/react";
 
-import {v4 as uuid} from 'uuid';
-
-import {storage, db, firebaseApp} from '../firebase';
+import {db, firebaseApp} from '../firebase';
 import firebase from 'firebase';
 
+import {useStateValue} from './StateProvider';
+
+import FileRow from './FileRow';
+
 function CodeEditor() {
-    const [fileUrl, setFileUrl] = useState(null);
+
+    const [{user}, dispatch] = useStateValue();
+
+    const [file, setFile] = useState(null);
     const [checked, setChecked] = useState(false);
-    const [files, setFiles] = useState(["file1.txt", "file1.txt", "file1.txt", "file1.txt"]);
+    const [progress, setProgress] = useState(false);
+    const [myFiles, setMyFiles] = useState([]);
 
     useEffect(() => {
-        // snapshot db update files
-    }, [fileUrl]);
+        setProgress(true);
+
+        db
+        .collection("users")
+        .doc(user.email)
+        .collection("files")
+        .orderBy("timestamp", "desc")
+        .onSnapshot((snapshot) => 
+            setMyFiles(
+                snapshot.docs.map((doc) => (
+                    {
+                        id: doc.id,
+                        data: doc.data(),
+                    }
+                ))
+            )
+        );
+
+        setProgress(false);
+    }, [file]);
+
+    console.log(myFiles)
 
     const handleEditorChange = (value, event)  => {
         console.log("Your CODE-->", value);
     };
 
     const onChange = (e) => {
-        const file = e.target.files[0];
-        const storageRef = firebaseApp.storage().ref()
-        const fileRef = storageRef.child(file.name)
-
-        fileRef
-        .put(file)
-        .then(snapshot => {
-            return snapshot.ref.getDownloadURL();  
-        })
-        .then(downloadURL => {
-            setFileUrl(downloadURL)
-         })
-         .catch(err => {
-            console.log(err);
-         });
+        setFile(e.target.files[0]);
     };
 
     const addFile = () => {
-        console.log(fileUrl);
-        
-        // db
-        // .collection("files")
-        // .add(
-        //     {
-            
-        //     }
-        // )
+        if (file) {
+            setProgress(true);
+            const storageRef = firebaseApp.storage().ref()
+            const fileRef = storageRef.child(file.name)
+
+            fileRef
+            .put(file)
+            .then(snapshot => {
+                return snapshot.ref.getDownloadURL();  
+            })
+            .then(downloadURL => {
+                // console.log(downloadURL)
+
+                db
+                .collection("users")
+                .doc(user.email)
+                .collection("files")
+                .add(
+                    {
+                        fileName: file.name,
+                        fileUrl: downloadURL,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    }
+                )
+            })
+            .catch(err => {
+                console.log(err);
+            });
+             setProgress(false);
+        } else {
+            alert("Choose a file for upload!")
+        }
     };
 
     
+    const logOut = () => {
+        dispatch(
+            {
+                type: 'LOGOUT',
+                payload: null
+            }
+        )
+    };
 
     return (
         <div className="codeEditor">
             <div className="codeEditor__header">
                 <div className="codeEditor__headerLeft">
-                    <Avatar />
-                    {/* Add logout on avatr click */}
+                    <Avatar
+                        className="codeEditor__avatar"
+                        src={user.photo}
+                        alt=""
+                        onClick={logOut} 
+                    />
+
+                    <h3>{user.displayName}</h3>
                 </div>
 
-                <div className="codeEditor__headerRight">
+                <div className="codeEditor__headerMiddle">
                     <input 
                         type="file"
                         onChange={onChange}
@@ -76,7 +124,9 @@ function CodeEditor() {
                     <Button onClick={addFile}>
                         Open in workspace
                     </Button>
+                </div>
 
+                <div className="codeEditor__headerRight">
                     <img 
                         className="toggle__icon" 
                         style={{backgroundColor: 'skyblue'}}
@@ -100,13 +150,18 @@ function CodeEditor() {
                 <div className={`codeEditor__bodyLeft ${checked && 'codeEditor__bodyLeft--dark'}`}>
                     <h3>Your Files</h3>
 
-                    <div>
-                        {files.map((file => (
-                            <div className="codeEditor__file">
-                                <InsertDriveFileIcon fontSize="small" />
-                                <p>{file}</p>
-                            </div>
-                        )))}
+                    <div className='codeEditor__files'>
+                        {progress? 
+                            <CircularProgress /> 
+                            :
+                            myFiles.map(({id, data: {fileName, fileUrl}}) => 
+                                <FileRow
+                                    id={id} 
+                                    fileName={fileName}
+                                    fileUrl={fileUrl}
+                                />
+                            ) 
+                        }
                     </div>
                 </div>
 

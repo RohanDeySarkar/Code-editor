@@ -1,21 +1,47 @@
 import './App.css';
 
-import {Switch, Route} from "react-router-dom"
-
 import Login from './components/Login';
 import CodeEditor from './components/CodeEditor';
 
+import {useStateValue} from './components/StateProvider';
+import { useEffect } from 'react';
+
+import { auth } from './firebase';
+
 function App() {
+
+  const [{user}, dispatch] = useStateValue();
+
+  useEffect(() => {
+    auth.onAuthStateChanged(authUser => {
+      if (authUser) {
+        dispatch(
+          {
+            type: 'LOGIN',
+            payload: {
+              uid: authUser.uid,
+              photo: authUser.photoURL,
+              email: authUser.email,
+              displayName: authUser.displayName,
+            }
+          }
+        )
+      } else {
+        dispatch(
+          {
+            type: 'Logout',
+            payload: null
+          }
+        )
+      }
+    })
+  }, [])
+
+  // console.log(user);
+  
   return (
     <div className="app">
-      <Switch>
-        <Route exact path="/login">
-          <Login />
-        </Route>
-        <Route exaact path="/">
-          <CodeEditor />
-        </Route>
-      </Switch>
+      {user? <CodeEditor /> : <Login />}
     </div>
   );
 }
