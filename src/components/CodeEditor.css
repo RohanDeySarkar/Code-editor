@@ -91,6 +91,7 @@
   letter-spacing: 2px;
   border-bottom: 1px solid whitesmoke;
   margin: 5px 0;
+  padding: 2px 5px;
 }
 
 .codeEditor__files {
@@ -103,4 +104,10 @@
 
 .codeEditor__bodyRight {
   flex: 0.8;
+}
+
+.codeEditor__footer {
+  display: grid;
+  place-items: center;
+  margin-top: 8px;
 }

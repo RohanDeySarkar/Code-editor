@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {forwardRef } from 'react';
 import './FileRow.css';
 
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -10,20 +10,28 @@ import {useStateValue} from './StateProvider';
 
 import Tooltip from '@material-ui/core/Tooltip';
 
-function FileRow({id, fileName, fileUrl}) {
+import axios from 'axios';
+
+const FileRow = forwardRef(({id, fileName, fileUrl, setProgress}, ref) => {
 
     const [{user, selectedId}, dispatch] = useStateValue();
 
     const selectFile = () => {
-        console.log(fileUrl);
-        
-        // fetch(fileUrl)
-        // .then((res) => {
-        //     res.text()
-        //     .then((text) => {
-        //         console.log(text);
-        //     })
-        // })
+        // console.log(fileUrl);
+        setProgress(true)
+        axios
+        .get(`https://cors-anywhere.herokuapp.com/${fileUrl}`)
+        .then((res) => res.data)
+        .then((data) => {
+            // console.log(data)
+            dispatch(
+                {
+                    type: "EDITOR_TEXT",
+                    payload: data
+                }
+            )
+        })
+        .catch(err => console.log(err))
 
         dispatch(
             {
@@ -31,6 +39,7 @@ function FileRow({id, fileName, fileUrl}) {
                payload: id
             }
         )
+        setProgress(false)
     };
 
     const handleDelete = () => {
@@ -48,10 +57,20 @@ function FileRow({id, fileName, fileUrl}) {
         .ref()
         .child(fileName)
         .delete()
+
+        if (id === selectedId) {
+            dispatch(
+                {
+                   type: "EDITOR_TEXT",
+                   payload: null
+                }
+            )
+        }
     };
 
     return (
-        <div 
+        <div
+            ref={ref}  
             className={`fileRow ${selectedId === id ? "fileRow--selected" : ""}`} 
             onClick={selectFile}
         >
@@ -65,6 +84,6 @@ function FileRow({id, fileName, fileUrl}) {
             </Tooltip>
         </div>
     )
-}
+});
 
-export default FileRow
+export default FileRow;

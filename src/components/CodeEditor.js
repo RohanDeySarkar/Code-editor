@@ -15,10 +15,11 @@ import firebase from 'firebase';
 import {useStateValue} from './StateProvider';
 
 import FileRow from './FileRow';
+import Footer from './Footer';
 
 function CodeEditor() {
 
-    const [{user}, dispatch] = useStateValue();
+    const [{user, defaultText}, dispatch] = useStateValue();
 
     const [file, setFile] = useState(null);
     const [checked, setChecked] = useState(false);
@@ -47,10 +48,17 @@ function CodeEditor() {
         setProgress(false);
     }, [file]);
 
-    console.log(myFiles)
+    // console.log(myFiles)
 
     const handleEditorChange = (value, event)  => {
-        console.log("Your CODE-->", value);
+        // console.log("Your CODE-->", value);
+
+        dispatch(
+            {
+                type: "EDITOR_TEXT",
+                payload: value
+            }
+        )
     };
 
     const onChange = (e) => {
@@ -101,6 +109,8 @@ function CodeEditor() {
             }
         )
     };
+
+    console.log(defaultText);
 
     return (
         <div className="codeEditor">
@@ -159,25 +169,37 @@ function CodeEditor() {
                             :
                             myFiles.map(({id, data: {fileName, fileUrl}}) => 
                                 <FileRow
+                                    key={id}
                                     id={id} 
                                     fileName={fileName}
                                     fileUrl={fileUrl}
+                                    setProgress={setProgress}
                                 />
                             ) 
                         }
                     </div>
                 </div>
-
+                
                 <div className="codeEditor__bodyRight">
-                    <Editor
+                    {progress? 
+                        <CircularProgress /> 
+                        : 
+                        <Editor
                         height="80vh"
                         theme={checked? "vs-dark" : ""}
                         // path="script.js"
                         defaultLanguage="javascript"
-                        defaultValue="// Code here"
+                        // defaultValue={defaultText}
+                        value={defaultText}
                         onChange={handleEditorChange}
-                    />
+                        />
+                    }
+                    
                 </div>
+            </div>
+
+            <div className="codeEditor__footer">
+                    <Footer />
             </div>
         </div>
     )

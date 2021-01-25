@@ -1,6 +1,7 @@
 export const initialState = {
     user: null,
     selectedId: null,
+    defaultText: "// Code here",
 };
 
 const reducer = (state, action) => {
@@ -16,13 +17,19 @@ const reducer = (state, action) => {
         case "LOGOUT":
             return {
                 ...state,
-                user: null
+                user: action.payload
             }
 
         case "SELECTED_FILE":
             return {
                 ...state,
                 selectedId: action.payload
+            }
+
+        case "EDITOR_TEXT":
+            return {
+                ...state,
+                defaultText: action.payload
             }
 
         default:

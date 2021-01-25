@@ -29,7 +29,7 @@ function App() {
       } else {
         dispatch(
           {
-            type: 'Logout',
+            type: 'LOGOUT',
             payload: null
           }
         )
@@ -41,7 +41,7 @@ function App() {
   
   return (
     <div className="app">
-      {user? <CodeEditor /> : <Login />}
+      {user !== null? <CodeEditor /> : <Login />}
     </div>
   );
 }

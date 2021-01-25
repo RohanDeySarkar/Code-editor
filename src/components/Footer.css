@@ -1,0 +1,7 @@
+.footer__button {
+  width: 200px;
+  padding: 5px !important;
+  text-transform: capitalize !important;
+  background-color: rgb(52, 143, 189) !important;
+  color: rgb(223, 223, 223) !important;
+}
