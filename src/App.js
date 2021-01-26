@@ -17,7 +17,7 @@ function App() {
       if (authUser) {
         dispatch(
           {
-            type: 'LOGIN',
+            type: 'SET_USER',
             payload: {
               uid: authUser.uid,
               photo: authUser.photoURL,
@@ -29,7 +29,7 @@ function App() {
       } else {
         dispatch(
           {
-            type: 'LOGOUT',
+            type: 'SET_USER',
             payload: null
           }
         )
@@ -41,7 +41,7 @@ function App() {
   
   return (
     <div className="app">
-      {user !== null? <CodeEditor /> : <Login />}
+      {!user? <Login /> : <CodeEditor />}
     </div>
   );
 }

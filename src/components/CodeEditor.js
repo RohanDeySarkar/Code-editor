@@ -104,7 +104,7 @@ function CodeEditor() {
     const logOut = () => {
         dispatch(
             {
-                type: 'LOGOUT',
+                type: 'SET_USER',
                 payload: null
             }
         )

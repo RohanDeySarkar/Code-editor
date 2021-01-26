@@ -8,25 +8,19 @@ const reducer = (state, action) => {
     // console.log(action)
 
     switch (action.type) {
-        case "LOGIN":
+        case 'SET_USER':
             return {
                 ...state,
                 user: action.payload
             }
 
-        case "LOGOUT":
-            return {
-                ...state,
-                user: action.payload
-            }
-
-        case "SELECTED_FILE":
+        case 'SELECTED_FILE':
             return {
                 ...state,
                 selectedId: action.payload
             }
 
-        case "EDITOR_TEXT":
+        case 'EDITOR_TEXT':
             return {
                 ...state,
                 defaultText: action.payload
