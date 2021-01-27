@@ -17,9 +17,11 @@ import {useStateValue} from './StateProvider';
 import FileRow from './FileRow';
 import Footer from './Footer';
 
+import axios from 'axios';
+
 function CodeEditor() {
 
-    const [{user, defaultText}, dispatch] = useStateValue();
+    const [{user, defaultText, selectedId}, dispatch] = useStateValue();
 
     const [file, setFile] = useState(null);
     const [checked, setChecked] = useState(false);
@@ -58,7 +60,20 @@ function CodeEditor() {
                 type: "EDITOR_TEXT",
                 payload: value
             }
-        )
+        );
+
+        db
+        .collection("users")
+        .doc(user.email)
+        .collection("files")
+        .doc(selectedId)
+        .set(
+            {
+                fileUrl: value,
+            },
+            {merge: true}
+        );
+
     };
 
     const onChange = (e) => {
@@ -79,22 +94,27 @@ function CodeEditor() {
             .then(downloadURL => {
                 // console.log(downloadURL)
 
-                db
-                .collection("users")
-                .doc(user.email)
-                .collection("files")
-                .add(
-                    {
-                        fileName: file.name,
-                        fileUrl: downloadURL,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    }
-                )
+                axios
+                .get(`https://cors-anywhere.herokuapp.com/${downloadURL}`)
+                .then((res) => res.data)
+                .then((data) => {
+                    db
+                    .collection("users")
+                    .doc(user.email)
+                    .collection("files")
+                    .add(
+                        {
+                            fileName: file.name,
+                            fileUrl: data,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        }
+                    )
+                });
             })
             .catch(err => {
                 console.log(err);
             });
-             setProgress(false);
+            setProgress(false);
         } else {
             alert("Choose a file for upload!")
         }

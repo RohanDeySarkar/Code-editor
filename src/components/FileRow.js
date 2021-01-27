@@ -19,19 +19,13 @@ const FileRow = forwardRef(({id, fileName, fileUrl, setProgress}, ref) => {
     const selectFile = () => {
         // console.log(fileUrl);
         setProgress(true)
-        axios
-        .get(`https://cors-anywhere.herokuapp.com/${fileUrl}`)
-        .then((res) => res.data)
-        .then((data) => {
-            // console.log(data)
-            dispatch(
-                {
-                    type: "EDITOR_TEXT",
-                    payload: data
-                }
-            )
-        })
-        .catch(err => console.log(err))
+
+        dispatch(
+            {
+                type: "EDITOR_TEXT",
+                payload: fileUrl
+            }
+        )
 
         dispatch(
             {
